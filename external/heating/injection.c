@@ -30,7 +30,6 @@ int injection_init(struct precision * ppr,
   /** - Initialize flags, indices and parameters */
   pin->has_DM_ann = _FALSE_;
   pin->has_DM_dec = _FALSE_;
-  pin->has_yp_dec = _FALSE_;
   pin->has_PBH_eva = _FALSE_;
   pin->has_PBH_acc = _FALSE_;
   pin->last_index_x_chi = 0;
@@ -171,9 +170,6 @@ int injection_indices(struct thermodynamics* pth){
   if(pin->DM_decay_fraction!=0){
     pin->has_DM_dec = _TRUE_;
   }
-  if (pin->f_yp!=0){
-    pin->has_yp_dec = _TRUE_;
-  }
   if(pin->PBH_evaporation_fraction!=0){
     pin->has_PBH_eva = _TRUE_;
   }
@@ -185,7 +181,6 @@ int injection_indices(struct thermodynamics* pth){
   index_inj = 0;
   class_define_index(pin->index_inj_DM_ann  , pin->has_DM_ann  , index_inj, 1);
   class_define_index(pin->index_inj_DM_dec  , pin->has_DM_dec  , index_inj, 1);
-  class_define_index(pin->index_inj_yp_dec  , pin->has_yp_dec  , index_inj, 1);
   class_define_index(pin->index_inj_PBH_eva , pin->has_PBH_eva , index_inj, 1);
   class_define_index(pin->index_inj_PBH_acc , pin->has_PBH_acc , index_inj, 1);
   class_define_index(pin->index_inj_tot     , _TRUE_           , index_inj, 1);
@@ -299,9 +294,7 @@ int injection_calculate_at_z(struct background* pba,
   pin->rho_cdm = pvecback[pba->index_bg_rho_cdm]*_Jm3_over_Mpc2_;                                   // [J/m^3]
   pin->rho_g = pvecback[pba->index_bg_rho_g]*_Jm3_over_Mpc2_;                                       // [J/m^3]
   pin->rho_b = pvecback[pba->index_bg_rho_b]*_Jm3_over_Mpc2_;                                       // [J/m^3]
-  if (pin->has_yp_dec == _TRUE_){
-    pin->rho_yp = pvecback[pba->index_bg_rho_yp]*_Jm3_over_Mpc2_;                                   // [J/m^3]
-  }
+ 
 
   /** - Hunt within the redshift table for the given index of deposition */
   class_call(array_spline_hunt(pin->z_table,
@@ -437,19 +430,6 @@ int injection_energy_injection_at_z(struct injection* pin,
       dEdt += rate;
     }
 
-    /* Y decay */
-    if(pin->has_yp_dec == _TRUE_){
-      class_call(injection_rate_yp_decay(pin,
-                                         z,
-                                         &rate),
-                 pin->error_message,
-                 pin->error_message);
-      if(pin->to_store == _TRUE_){
-        pin->injection_table[pin->index_inj_yp_dec][pin->index_z_store] = rate;
-      }
-      
-      dEdt += rate;
-    }
 
     /* PBH evaporation */
     if(pin->has_PBH_eva == _TRUE_){
@@ -773,30 +753,6 @@ int injection_rate_DM_decay(struct injection * pin,
   return _SUCCESS_;
 }
 
-/**
- * Calculate injection from Y decay.
- *
- * @param pin            Input: pointer to injection structure
- * @param z              Input: redshift
- * @param energy_rate    Output: energy density injection rate
- * @return the error status
- */
-int injection_rate_yp_decay(struct injection * pin,
-                            double z,
-                            double * energy_rate){
-
-  /** - Define local variables */
-  double Gamma_yp_s;
-  
-  /** - Calculate injection rates */
-  Gamma_yp_s = pin->Gamma_yp*_s_over_Mpc_;                         //[1/s]
-
-  *energy_rate = pin->rho_yp*Gamma_yp_s*pin->f_yp*exp(-Gamma_yp_s*pin->t);               // [J/(m^3 s)]
-
-  //printf("->Y particle injection rate at z= %g is %g\n", z, pin->rho_yp*Gamma_yp_s*pin->f_yp*exp(-Gamma_yp_s*pin->t));
-  
-  return _SUCCESS_;
-}
 
 
 /**
