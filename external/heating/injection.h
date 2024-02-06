@@ -32,8 +32,7 @@ struct injection{
   double DM_decay_fraction;
   double DM_decay_Gamma;
 
-  double Gamma_yp;    //[1/Mpc]
-  double f_yp;
+
 
   double PBH_evaporation_fraction;
   double PBH_evaporation_mass;
@@ -80,7 +79,7 @@ struct injection{
   double rho_g;
   double rho_b;
   double rho_cdm;
-  double rho_yp;
+
 
   /* Parameters from thermodynamics structure */
   /* Redshift independent, i.e. defined in injection_init */
@@ -132,7 +131,6 @@ struct injection{
   int index_inj_diss;
   int index_inj_DM_ann;
   int index_inj_DM_dec;
-  int index_inj_yp_dec;
   int index_inj_PBH_eva;
   int index_inj_PBH_acc;
   int index_inj_tot;
@@ -172,7 +170,6 @@ struct injection{
 
   int has_DM_ann;
   int has_DM_dec;
-  int has_yp_dec;
   int has_PBH_eva;
   int has_PBH_acc;
 
@@ -234,10 +231,6 @@ extern "C" {
   int injection_rate_DM_decay(struct injection * phe,
                               double z,
                               double * energy_rate);
-
-  int injection_rate_yp_decay(struct injection * phe,
-                            double z,
-                            double * energy_rate);
                             
   int injection_rate_PBH_evaporation_mass_evolution(struct background * pba,
                                                     struct injection * phe);
