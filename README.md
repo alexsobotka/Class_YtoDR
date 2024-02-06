@@ -14,13 +14,13 @@ Sobotka et al. (2023) [arXiv:2312.13235]: https://arxiv.org/abs/2312.13235.
 
 R_Gamma_yp is dimensionless and ranges from 0 to 1. Gamma_yp should be provided in units of 1/Mpc. 
 
+See the instructions below on how to install and use CLASS.
 
 
 
 
 
-
-CLASS: Cosmic Linear Anisotropy Solving System  {#mainpage}
+CLASS: Cosmic Linear Anisotropy Solving System
 ==============================================
 
 Authors: Julien Lesgourgues, Thomas Tram, Nils Schoeneberg
