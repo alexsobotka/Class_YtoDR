@@ -1,5 +1,7 @@
 README
+autosetup.py
 setup.py
+/Users/alexsobotka/Class_YtoDR/python/../python/classy.pyx
 /Users/alexsobotka/modified_class_RG/python/../python/classy.pyx
 classy.egg-info/PKG-INFO
 classy.egg-info/SOURCES.txt

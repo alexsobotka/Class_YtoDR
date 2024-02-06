@@ -88,7 +88,6 @@ struct background
   double Gamma_yp;      /**< \f$ \Gamma_{yp} \f$: Decay rate for Y particle */
   double R_Gamma_yp;      /**< \f$ \rho_Y/(\rho_r+rho_m) \f$: ratio of rho_Y to rho_tot at a scale factor of a_Gamma*/
   double gap_yp;       /**< \f$ 2 - \rho_{rad,f}a_f^4 /\rho_{rad,i}a_i^4  \f$: percentage of extra comoving radiation after injection */
-  double f_yp;
   double postNeff_yp;    /** post-decay Neff **/
   double aGamma_ai;
 
