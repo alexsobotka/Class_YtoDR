@@ -2314,7 +2314,7 @@ int input_read_parameters_species(struct file_content * pfc,
   int int3;
   double * pointer3;
   int i;
-  double rho_rad, rho_rad_in_J, T_cmb_in_J, gstar_degen, neff_degen, f_yp, N_ur2, gap_g, gap_ur;
+  double rho_rad, rho_rad_in_J, T_cmb_in_J, gstar_degen, neff_degen, N_ur2, gap_g, gap_ur;
   double rho_g_prime_in_J;
 
 
@@ -3104,9 +3104,6 @@ int input_read_parameters_species(struct file_content * pfc,
   class_call(parser_read_double(pfc,"R_Gamma_yp",&param2,&flag2,errmsg),                            
               errmsg,
               errmsg);
-  class_call(parser_read_double(pfc,"f_yp",&param3,&flag3,errmsg),
-               errmsg,
-               errmsg);
   class_call(parser_read_double(pfc,"m_ncdm",&param4,&flag4,errmsg),
                errmsg,
                errmsg);
@@ -3125,32 +3122,10 @@ int input_read_parameters_species(struct file_content * pfc,
   }
   if (flag2 == _TRUE_){
     pba->R_Gamma_yp = param2;
-    //pba->gap_yp =0.0609002828505565*pow(param2,4.) -0.19622624580851233*pow(param2,3.) +0.6785601625381329*pow(param2,2.) +2.066846206109085*(param2) +0.9999999151942915;
-    // pba->gap_yp =0.027445852137605538*pow(param2,4.) -0.15246790679270983*pow(param2,3.) +0.6457976715881053*pow(param2,2.) +2.072662287995397*(param2) +0.9998680699541844; //updating gap for 0<maxyr<1.2
   }
-    if (flag3 == _TRUE_){
-    pba->f_yp = param3;
-      if ((pba->f_yp == 0.0)){  
-        pba->Omega0_g_prime=pba->Omega0_g;
-      }
-    }
 
-  /** Do we have to loop over background to correctly enforce the closure relation? this way be useful for species whose contribution today is not known **/
-  // if ((pba->R_Gamma_yp != 0.0) && (pba->f_yp == 0.0)){
-  //   pba->loop_over_background_for_closure_relation = _TRUE_;
-  //   pba->is_dr_converged = _FALSE_;
-  // }
-  // class_call(parser_read_double(pfc,"precision_loop_over_background",&param1,&flag1,errmsg),
-  //            errmsg,
-  //            errmsg);
-  // if (flag1==_TRUE_){
-  //   pba->precision_loop_over_background = param1;
-  // }
-  // else{
-  //   pba->precision_loop_over_background = 1e-3; //default value.
-  // }
 
- // }
+
 
 
   /** 7.3) Final consistency checks for dark matter species */
@@ -3512,17 +3487,6 @@ int input_read_parameters_injection(struct file_content * pfc,
   class_read_double("DM_decay_Gamma",pin->DM_decay_Gamma);
 
 
-
-  /** 2) Y decay */
-  /** 2.a) Fraction */
-  /* Read */
-  class_read_double("f_yp",pin->f_yp);
-  if (pin->f_yp!=0){
-    pth->has_exotic_injection = _TRUE_;
-  }
-  /** 2.b) Decay width */
-  /* Read */
-  class_read_double("Gamma_yp",pin->Gamma_yp);
 
   /** 3) PBH evaporation */
   /** 3.a) Fraction */
@@ -5863,14 +5827,9 @@ int input_default_params(struct background *pba,
    /** 8) Y particle decay */
   /** 8.1) Y particle decay rate */
   pba->Gamma_yp = 0.0;
-  /** 8.2) Max value of rho_r/rho_yp */
+  /** 8.2) Max value of rho_Y/rho_tot */
   pba->R_Gamma_yp = 0.0;
-  /** 8.3) ratio of comoving radiation density after injection to that before injection */
-  //pba->gap_yp=1.0;
-  /** or */
-  pba->f_yp = 0.0;
-  // pba->loop_over_background_for_closure_relation = _FALSE_;
-  // pba->is_dr_converged = _TRUE_;
+
 
 
   /** 9) Dark energy contributions */
@@ -5927,12 +5886,6 @@ int input_default_params(struct background *pba,
   /** 2.b) Decay width */
   pin->DM_decay_Gamma = 0.;
 
-
-  /** 2) Y decay */
-  /** 2.a) Fraction */
-  pin->f_yp = 0.;
-  /** 2.b) Decay width */
-  pin->Gamma_yp = 0.;
 
   
   /** 3) PBH evaporation */

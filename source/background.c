@@ -422,15 +422,7 @@ int background_functions(
   /** - compute each component's density and pressure */
 
   /* photons */
-    /*If there is Y decay and the Y particle is NOT decaying completely into dark radiation (i.e. either fully photons or a mix of photons and dr, 
-  then use the decreased photon denisty, Omega0_g_prime, and add the photons from decay on top of that background evolution such that Omega0_g_prime + decay products
-  gives the correct Omega0_g today.*/
-  if ((pba->has_yp == _TRUE_) && (pba->f_yp != 0.0) ) { 
-    pvecback[pba->index_bg_rho_g] =(pba->Omega0_g_prime * pow(pba->H0,2)/ pow(a,4) ) + (pba->f_yp*pvecback_B[pba->index_bi_rho_yr]);
-  }
-  else {
-    pvecback[pba->index_bg_rho_g] =pba->Omega0_g * pow(pba->H0,2) / pow(a,4);
-  }
+  pvecback[pba->index_bg_rho_g] =pba->Omega0_g * pow(pba->H0,2) / pow(a,4);
   rho_tot += pvecback[pba->index_bg_rho_g];
   p_tot += (1./3.) * pvecback[pba->index_bg_rho_g];
   dp_dloga += -(4./3.) * pvecback[pba->index_bg_rho_g];
@@ -472,7 +464,7 @@ int background_functions(
     /* Pass value of rho_dr to output */
     /* if dr source by Y decay */
     if (pba->has_yp == _TRUE_) {
-      pvecback[pba->index_bg_rho_dr] = (1.-pba->f_yp)*pvecback_B[pba->index_bi_rho_yr];
+      pvecback[pba->index_bg_rho_dr] = pvecback_B[pba->index_bi_rho_yr];
       rho_tot += pvecback[pba->index_bg_rho_dr];
       p_tot += (1./3.)*pvecback[pba->index_bg_rho_dr];
       dp_dloga += -(4./3.) * pvecback[pba->index_bg_rho_dr];
@@ -595,14 +587,7 @@ int background_functions(
 
   /* relativistic neutrinos (and all relativistic relics) */
   if (pba->has_ur == _TRUE_) {
-  /*If there is Y decay and the Y particle is injecting any photons, then the photon temperature at neutrino decoupling is colder which results in Omega_ur being smaller early on. 
-  Use Omega0_ur_prime*/
-    if ( (pba->has_yp == _TRUE_) && (pba->f_yp != 0.0) ) { //if injecting any photons
-      pvecback[pba->index_bg_rho_ur] =  pba->Omega0_ur_prime * pow(pba->H0,2) / pow(a,4) ;
-    }
-    else {
-      pvecback[pba->index_bg_rho_ur] = pba->Omega0_ur * pow(pba->H0,2) / pow(a,4);
-    }
+    pvecback[pba->index_bg_rho_ur] = pba->Omega0_ur * pow(pba->H0,2) / pow(a,4);
     rho_tot += pvecback[pba->index_bg_rho_ur];
     p_tot += (1./3.) * pvecback[pba->index_bg_rho_ur];
     dp_dloga += -(4./3.) * pvecback[pba->index_bg_rho_ur];
@@ -1051,14 +1036,11 @@ int background_indices(
       pba->has_dr = _TRUE_;
   }
 
- //if (pba->maxyr_yp != 0.) 
-  //  pba->has_yp = _TRUE_;
   
   if ((pba->Gamma_yp != 0.) && (pba->R_Gamma_yp != 0.)){
     pba->has_yp = _TRUE_;
     pba->has_yr = _TRUE_;
-    if (pba->f_yp != 1.)
-      pba->has_dr = _TRUE_;
+    pba->has_dr = _TRUE_;
   }
 
   if (pba->Omega0_scf != 0.)
@@ -2190,14 +2172,9 @@ int background_solve(
     }
 
     if (pba->has_yp == _TRUE_) {
-      pba->postNeff_yp = (pba->Omega0_r - pba->Omega0_g)/(7./8.*pow(4./11.,4./3.)*pba->Omega0_g ); /*includes ur and DR*/
       printf("    Decaying Y particle details: \n");
       printf("     -> Gamma_yp = %f\n",pba->Gamma_yp);
       printf("     -> R_Gamma_yp = %g\n",pba->R_Gamma_yp);
-      //printf("     -> gap = %f\n",pba->gap_yp);
-      printf("     -> f_yp = %g\n",pba->f_yp);
-      //printf("     -> neutrino branching fraction = %f\n",pba->branch_yp[2]);
-      printf("     -> post-decay N_eff = %f\n",pba->postNeff_yp);
     }
 
     if (pba->has_ncdm == _TRUE_) {
@@ -2340,22 +2317,11 @@ int background_initial_conditions(
   }
 
   /* Set initial values of {B} variables: */
-  /* If there is Y decay and is injecting photons, the pre-decay Omega_g is set by Omega0_g_prime */
-  if ((pba->has_yp == _TRUE_) && (pba->f_yp!=0.0) ){ 
-    Omega_rad = pba->Omega0_g_prime;
-  }
-  else { 
-    Omega_rad = pba->Omega0_g;
-  }
+  Omega_rad = pba->Omega0_g;
+
 
   if (pba->has_ur == _TRUE_) {
-  /* If there is Y decay and is injecting photons, the pre-decay Omega_ur is set by Omega0_ur_prime */
-    if ((pba->has_yp == _TRUE_) && (pba->f_yp!=0.0) ){ 
-      Omega_rad += pba->Omega0_ur_prime;
-    }
-    else {
-      Omega_rad += pba->Omega0_ur;
-    }
+    Omega_rad += pba->Omega0_ur;
   }
 
   if (pba->has_idr == _TRUE_) {
@@ -2451,21 +2417,10 @@ int background_initial_conditions(
       }
     }
 
-    /* rho_yp at initial time */
-    //pvecback_integration[pba->index_bi_rho_yp] = pba->R_Gamma_yp*(rho_rad*pow(tilde,0.5) + rho_m);
-    //pvecback_integration[pba->index_bi_rho_yp] = pba->R_Gamma_yp*((rho_rad/aGamma_ai) + rho_m);
-
   
   /* rho_yr at initial time */
     if (pba->has_yr == _TRUE_) {
-      if (pba->f_yp == 0.0) {
-        //pvecback_integration[pba->index_bi_rho_yr] = (1./3.)*tilde*pba->R_Gamma_yp*(rho_rad*pow(tilde,0.5) + rho_m);
-        //pvecback_integration[pba->index_bi_rho_yr] = (1./3.)*tilde*pba->R_Gamma_yp*((rho_rad/aGamma_ai) + rho_m);
         pvecback_integration[pba->index_bi_rho_yr] = (1./3.)*tilde*rho_yp_i;
-      }
-      else{
-        pvecback_integration[pba->index_bi_rho_yr] = 0.0;
-      }
     }
   }
 
@@ -3099,45 +3054,19 @@ int background_output_budget(
     }
 
     printf(" ---> Relativistic Species \n");
-    if (pba->has_yr == _FALSE_) {
-      class_print_species("Photons",g);
-      budget_radiation+=pba->Omega0_g;
-    }
-    if (pba->has_yr == _TRUE_) { 
-      if (pba->f_yp!=0.0) {  //if injecting photons
-        class_print_species("Photons", g_prime );
-        budget_radiation+=pba->Omega0_g_prime;
-      }  
-      if (pba->f_yp==0.0) {  //if not injecting photons
-        class_print_species("Photons", g );
-        budget_radiation+=pba->Omega0_g;
-      }  
-    }
+
+    class_print_species("Photons",g);
+    budget_radiation+=pba->Omega0_g;
+  
+
     if (pba->has_ur == _TRUE_) {
-      if (pba->has_yr == _FALSE_) { 
         class_print_species("Ultra-relativistic relics",ur);
         budget_radiation+=pba->Omega0_ur;
-      }
-      if (pba->has_yr == _TRUE_) { 
-        if (pba->f_yp!=0.0) {  //if injecting photons
-          class_print_species("Ultra-relativistic relics", ur_prime );
-          budget_radiation+=pba->Omega0_ur_prime;
-        }
-        else {
-          class_print_species("Ultra-relativistic relics",ur);
-          budget_radiation+=pba->Omega0_ur;  
-        }  
-      }
     }
 
-    /*if (pba->has_dr == _TRUE_) {
-      class_print_species("Dark Radiation (from decay)",dr);
-      budget_radiation+=pba->Omega0_dr;
-    }*/
     if (pba->has_yr == _TRUE_) {
       printf(" ---> Relativistic Species (from Y decay) \n");
-      class_print_species("Photons",yr*pba->f_yp);
-      class_print_species("Dark Radiation",yr*(1.-pba->f_yp));
+      class_print_species("Dark Radiation",yr);
       budget_radiation+=pba->Omega0_yr;
     }
 

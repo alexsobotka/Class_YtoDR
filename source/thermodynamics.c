@@ -622,14 +622,9 @@ int thermodynamics_helium_from_bbn(
               pth->error_message,
               pth->error_message);
 
-    if ((pba->has_yp == _TRUE_) && (pba->f_yp != 0.0) ) { //if NOT decaying completely into neutrinos. Either fully photons or a mix. Need to correct the input omega_b since we are changing omega_g near BBN
-      Omega0_b_prime = pba->Omega0_b * pow(pba->Omega0_g/pba->Omega0_g_prime,3./4.);
-      omega_b= Omega0_b_prime*pba->h*pba->h;
-      //printf("omega_b_prime is %.13f\n", omega_b);
-    }
-    else {
-      omega_b=pba->Omega0_b*pba->h*pba->h;
-    }
+
+    omega_b=pba->Omega0_b*pba->h*pba->h;
+    
 
     class_test(omega_b < omegab[0],
               pth->error_message,
@@ -785,13 +780,8 @@ int thermodynamics_helium_from_bbn(
               pth->error_message,
               pth->error_message);
 
-    if ((pba->has_yp == _TRUE_) && (pba->f_yp != 0.0) ) { //if NOT decaying completely into neutrinos. Either fully photons or a mix. Need to correct the input omega_b since we are changing omega_g near BBN
-      Omega0_b_prime = pba->Omega0_b * pow(pba->Omega0_g/pba->Omega0_g_prime,3./4.);
-      omega_b= Omega0_b_prime*pba->h*pba->h;
-    }
-    else {
-      omega_b=pba->Omega0_b*pba->h*pba->h;
-    }
+    omega_b=pba->Omega0_b*pba->h*pba->h;
+    
 
     /** - interpolate in one dimension (along rhoyh) */
     class_call(array_interpolate_spline(rhoyh,
