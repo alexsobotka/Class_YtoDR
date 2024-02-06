@@ -1,3 +1,25 @@
+Class_YtoDR
+==============================================
+Author: Alex Sobotka
+
+This is a modified version of the CLASS boltzmann solver created by Julien Lesgourgues and Thomas Tram. 
+Class_YtoDR calculates the effects of a hidden sector Y particle that decays into dark radiation (DR). 
+The Y particle is assumed to be non-relativistic and the DR is assumed to be relativistic and 
+non-interacting. 
+
+The only input parameters that are needed to describe the decay are the decay rate of the Y particle
+(Gamma_yp) and R_Gamma_yp, which is a measure of rho_Y(a_Gamma)/rho_tot(a_Gamma) where a_Gamma is roughly 
+the scale factor when H(a_Gamma) = Gamma_yp. For details regarding the model and assumptions, please see 
+Sobotka et al. (2023) [arXiv:2312.13235]: https://arxiv.org/abs/2312.13235. 
+
+R_Gamma_yp is dimensionless and ranges from 0 to 1. Gamma_yp should be provided in units of 1/Mpc. 
+
+
+
+
+
+
+
 CLASS: Cosmic Linear Anisotropy Solving System  {#mainpage}
 ==============================================
 
